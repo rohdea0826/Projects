@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/myimages">
+        <file>屏幕截图(1).png</file>
+    </qresource>
+</RCC>
