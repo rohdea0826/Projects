@@ -1,7 +1,6 @@
 #pragma once
-
-#pragma once
 #include "Model.h"
+#include "View.h"
 
 void SnakeInit(Snake *psnake);
 

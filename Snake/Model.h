@@ -5,17 +5,20 @@
 #include <stdbool.h>
 #include <Windows.h>
 
+//方向，上下左右
 typedef enum Direction
 {
 	UP,DOWN,LEFT,RIGHT
 }Direction;
 
+//位置坐标
 typedef struct Position
 {
 	int x;
 	int y;
 }Position;
 
+//
 typedef struct Node
 {
 	Position pos;
@@ -36,5 +39,12 @@ typedef struct Game
 
 	int width;
 	int height;
+	int speed;
 }Game;
 
+void initSnake(Snake *psnake);
+bool FoodonSnake(Position pos, const Snake *psnake);
+Position initFood(int w, int h, const Snake *psnake);
+void initGame(Game *pGame);
+void addHead(Snake *psnake, Position next);
+void removeTail(Snake *psnake);

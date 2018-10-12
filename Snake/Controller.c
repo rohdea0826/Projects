@@ -1,114 +1,113 @@
-//初始化 Game
 #include "Controller.h"
 
-void SnakeInit(Snake *psnake)
-{
-	psnake->tail = NULL;
-	for (int i = 0; i < 3; i++)
-	{
-		Node *newNode = (Node *)malloc(sizeof(Node));
-		newNode->pos.x = 7 + i;
-		newNode->pos.y = 2;
-
-		if (i == 0)
-		{
-			psnake->head = newNode;
-		}
-
-		newNode->next = psnake->tail;
-		psnake->tail = newNode;
-	}
-}
-
-bool IsOverlap(Position pos, const Snake *psnake)
-{
-	Node *newNode;
-	for (newNode = psnake->tail; newNode != NULL; newNode = newNode->next)
-	{
-		if (pos.x == newNode->pos.x &&pos.y == newNode->pos.y) return 1;
-	}
-	return 0;
-}
-
-//食物规则
-//1.随机  2.范围内  3.不在蛇身上
-Position FoodInit(int w,int h,const Snake *psnake)
-{
-	Position pos;
-	do
-	{
-		pos.x = rand() % w;
-	pos.y = rand() % h; 
-	}
-	while (IsOverlap(pos, psnake));
-	return pos;
-}
-
-void GameInit(Game *pGame)
-{
-	pGame->width = 28;
-	pGame->height = 27;
-
-	SnakeInit(&pGame->snake);
-	pGame->food = FoodInit(pGame->width,pGame->height,&pGame->snake);
-
-}
-
-void AddHead(Snake *psnake, Position next)
-{
-	Node *newNode = (Node *)malloc(sizeof(Node));
-	newNode->pos = next;
-	newNode->next = NULL;
-	psnake->head->next = newNode;
-	psnake->head = newNode;
-}
-
+//获取蛇前进方向的下一个坐标
 Position getNextPos(const Snake *psnake)
 {
-	
+	Position pos_tmp;
+	pos_tmp.x = 0; pos_tmp.y = 0;
+	switch (psnake->direction)
+	{
+	case UP:
+		pos_tmp.x = psnake->head->pos.x;
+		pos_tmp.y = psnake->head->pos.y - 1;
+		break;
+	case DOWN:
+		pos_tmp.x = psnake->head->pos.x;
+		pos_tmp.y = psnake->head->pos.y + 1;
+		break;
+	case LEFT:
+		pos_tmp.x = psnake->head->pos.x - 1;
+		pos_tmp.y = psnake->head->pos.y;
+		break;
+	case RIGHT:
+		pos_tmp.x = psnake->head->pos.x + 1;
+		pos_tmp.y = psnake->head->pos.y;
+		break;
+	default:
+		break;
+	}
+	return pos_tmp;
 }
 
-bool isEat(Position food, Position next)
+//判断是否吃到食物
+bool eatFood(Position food, Position next)
 {
 	return food.x == next.x && food.y == next.y;
 }
 
-void GameRun()
+bool beyondMap(Game game,Position next)
 {
-	Game game;
-	GameInit(&game);
+	if (next.x >= game.width || next.x < 0)	return 1;
+	if (next.y >= game.height || next.y < 0)	return 1;
+	return 0;
+}
 
+void pauseGame()
+{
 	while (1)
 	{
+		Sleep(300);
+		if (GetAsyncKeyState(VK_SPACE))
+			break;
+	}
+}
+
+void runGame()
+{
+	//游戏启动
+	Game game;
+	initGame(&game);
+	initView(game.height, game.width);
+	displayWall(game.width, game.height);
+	displaySnake(&game.snake);
+	initFood(game.width, game.height, &game.snake);
+	
+	while (1)
+	{
+		if (GetAsyncKeyState(VK_UP) && game.snake.direction != DOWN) {
+			game.snake.direction = UP;
+		}
+		else if (GetAsyncKeyState(VK_DOWN) && game.snake.direction != UP) {
+			game.snake.direction = DOWN;
+		}
+		else if (GetAsyncKeyState(VK_LEFT) && game.snake.direction != RIGHT) {
+			game.snake.direction = LEFT;
+		}
+		else if (GetAsyncKeyState(VK_RIGHT) && game.snake.direction != LEFT) {
+			game.snake.direction = RIGHT;
+		}
+		else if (GetAsyncKeyState(VK_SPACE)) {
+			pauseGame();
+		}
+		else if (GetAsyncKeyState(VK_ESCAPE)) {
+			break;
+		}
+		else if (GetAsyncKeyState(VK_F1)) {
+			game.speed = 100;
+		}
+
 		Position nextPos = getNextPos(&game.snake);
-		if (isEat(game.food,nextPos))
+		if (eatFood(game.food,nextPos))
 		{
-			AddHead(&game.snake, nextPos);
-			game.food = FoodInit(game.width, game.height, &game.snake);
+			addHead(&game.snake, nextPos);
+			game.food = initFood(game.width, game.height, &game.snake);
 		}
 		else
 		{
-			//removeTail(&game.snake);
-			
+			removeTail(&game.snake);
+			addHead(&game.snake, nextPos);
 		}
+
+		if (beyondMap(game, nextPos)) break;
 		
+		Sleep(game.speed);
 	}
 }
 
 
 int main()
 {
-	while (1)
-	{
-		if (GetAsyncKeyState(VK_UP))
-			printf("%d\n", VK_UP);
-		else
-			printf("%d\n", 0);
-		Sleep(500);
-	}
-
-
-	//Game a;
-	//GameInit(&a);
+	srand((unsigned)time(NULL));
+	runGame();
 	return 0;
 }
