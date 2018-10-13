@@ -7,3 +7,4 @@ void displaySnakeBlock(int x, int y);
 void cleanSnakeBlock(int x, int y);
 void displayFood(int x, int y);
 void displayScore(int score);
+void displayGameOver();

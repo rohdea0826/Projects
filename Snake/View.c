@@ -1,17 +1,19 @@
-#include "Model.h"
+ï»¿#include "Model.h"
 #include <Windows.h>
 #include <stdio.h>
+#include "View.h"
 
 static void setCurPos(int X, int Y)
 {
 	HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-	// ±ê×¼ÊäÈë/±ê×¼Êä³ö/±ê×¼´íÎóÊä³ö
+	// æ ‡å‡†è¾“å…¥/æ ‡å‡†è¾“å‡º/æ ‡å‡†é”™è¯¯è¾“å‡º
 	COORD coord = { X, Y };
 	SetConsoleCursorPosition(hStdOutput, coord);
 }
 
 void initView(int width, int height)
 {
+
 	HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO info;
 	GetConsoleCursorInfo(hStdOutput, &info);
@@ -21,49 +23,49 @@ void initView(int width, int height)
 
 void displayWall(int width, int height)
 {
-	// ÉÏ±ßµÄÇ½
+	// ä¸Šè¾¹çš„å¢™
 	setCurPos(0, 0);
 	for (int i = 0; i < width + 2; i++) {
-		printf("¨€");
+		printf("â–ˆ");
 	}
 
-	// ÏÂ±ßµÄ
+	// ä¸‹è¾¹çš„
 	setCurPos(0, height + 1);
 	for (int i = 0; i < width + 2; i++) {
-		printf("¨€");
+		printf("â–ˆ");
 	}
 
-	// ×ó±ßµÄ
+	// å·¦è¾¹çš„
 	for (int i = 0; i < height + 2; i++) {
 		setCurPos(0, i);
-		printf("¨€");
+		printf("â–ˆ");
 	}
 
-	// ÓÒ±ßµÄ
+	// å³è¾¹çš„
 	for (int i = 0; i < height + 2; i++) {
 		setCurPos(2 * (1 + width), i);
-		printf("¨€");
+		printf("â–ˆ");
 	}
 }
 
 void displaySnake(const Snake *pSnake)
 {
 	for (Node *cur = pSnake->head; cur != NULL; cur = cur->next) {
-		setCurPos(2 * (cur->pos.x + 1), cur->pos.y + 1);
-		printf("¨€");
+		setCurPos( 2*(cur->pos.x + 1), cur->pos.y + 1);
+		printf("â–ˆ");
 	}
 }
 
 void displaySnakeBlock(int x, int y)
 {
-	setCurPos(2 * (x + 1), y + 1);
-	printf("¨€");
+	setCurPos( 2*(x + 1), y + 1);
+	printf("â–ˆ");
 }
 
 void displayFood(int x, int y)
 {
 	setCurPos(2 * (x + 1), y + 1);
-	printf("¨€");
+	printf("â–ˆ");
 }
 
 void cleanSnakeBlock(int x, int y)
@@ -75,5 +77,16 @@ void cleanSnakeBlock(int x, int y)
 void displayScore(int score)
 {
 	setCurPos(30 * 2 + 10, 10);
-	printf("µÃ·Ö: %d", score);
+	printf("å¾—åˆ†: %d", score);
+}
+
+void displayGameOver()
+{
+	system("cls");
+	setCurPos(10, 10);
+	printf("Game over!\n");
+	setCurPos(10, 12);
+	printf("ç©ºæ ¼ï¼šç»§ç»­æ¸¸æˆ");
+	setCurPos(10, 14);
+	printf("ESC ï¼šé€€å‡ºæ¸¸æˆ");
 }

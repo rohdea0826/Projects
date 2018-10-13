@@ -21,7 +21,7 @@ void initSnake(Snake *psnake)
 		newNode->next = psnake->tail;
 		psnake->tail = newNode;
 	}
-	psnake->direction = RIGHT;
+	psnake->direction = DOWN;
 }
 
 //判断食物不在蛇身上
@@ -52,14 +52,17 @@ Position initFood(int w, int h, const Snake *psnake)
 //游戏地图及蛇初始化
 void initGame(Game *pGame)
 {
+	system("cls");
 	pGame->width = 28;
 	pGame->height = 27;
 
 	initSnake(&pGame->snake);
 	pGame->food = initFood(pGame->width, pGame->height, &pGame->snake);
+	initView(pGame->width, pGame->height);
+	displayWall(pGame->width, pGame->height);
+	displaySnake(&pGame->snake);
 
-	pGame->speed = 500;
-
+	pGame->speed = 300;
 }
 
 //头部添加一个节点

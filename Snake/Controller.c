@@ -1,4 +1,6 @@
 #include "Controller.h"
+#include "Model.h"
+#include "View.h"
 
 //获取蛇前进方向的下一个坐标
 Position getNextPos(const Snake *psnake)
@@ -42,6 +44,16 @@ bool beyondMap(Game game,Position next)
 	return 0;
 }
 
+bool eatItself(Game game, Position next)
+{
+	Node *cur;
+	for (cur = game.snake.tail; cur != NULL; cur = cur->next)
+	{
+		if (cur->pos.x == next.x && cur->pos.y == next.y) return 1;
+	}
+	return 0;
+}
+
 void pauseGame()
 {
 	while (1)
@@ -51,17 +63,23 @@ void pauseGame()
 			break;
 	}
 }
+void runGame();
+void GameOver()
+{
+	displayGameOver();
+	while (1)
+	{
+		Sleep(300);
+		if (GetAsyncKeyState(VK_SPACE)) runGame();
+		if (GetAsyncKeyState(VK_ESCAPE)) break;
+	}
+}
 
 void runGame()
 {
 	//游戏启动
 	Game game;
 	initGame(&game);
-	initView(game.height, game.width);
-	displayWall(game.width, game.height);
-	displaySnake(&game.snake);
-	initFood(game.width, game.height, &game.snake);
-	
 	while (1)
 	{
 		if (GetAsyncKeyState(VK_UP) && game.snake.direction != DOWN) {
@@ -92,16 +110,17 @@ void runGame()
 			addHead(&game.snake, nextPos);
 			game.food = initFood(game.width, game.height, &game.snake);
 		}
+		else if (beyondMap(game, nextPos)) break;
+		else if (eatItself(game, nextPos)) break;
 		else
 		{
 			removeTail(&game.snake);
 			addHead(&game.snake, nextPos);
 		}
-
-		if (beyondMap(game, nextPos)) break;
-		
 		Sleep(game.speed);
 	}
+	GameOver();
+	free(game.snake.tail);
 }
 
 
