@@ -31,7 +31,7 @@ $(cli):$(CLI_OBJ)
 %.o:$(CLIENT)/%.cpp
 	$(cc) -c $< $(INCLUDE)
 %.o:$(SERVER)/%.cpp
-	$(cc) -c $< $(INCLUDE)
+	$(cc) -c -std=c++11 $< $(INCLUDE)
 %.o:$(DATAPOOL)/%.cpp
 	$(cc) -c $<
 %.o:$(COMM)/%.cpp

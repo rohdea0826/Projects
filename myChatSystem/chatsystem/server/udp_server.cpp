@@ -63,6 +63,11 @@ void server::broadcastData()
 	for(; iter != online.end(); iter++){
 		sendData(str, iter->second);
 	}
+	/*此处也可使用C++11中的循环方式
+	 * 需要在Makefile中加入 -std=c++11 选项
+	 *for(auto &iter: online);
+	 *
+	 */
 }
 
 server::~server()
